@@ -4,7 +4,9 @@ export default class NetworkManager{
 
 	constructor(){
 		this.baseUrl = "https://gank.io/api";
-		this.headersMap = new Map([['Content-Type': 'application/json']]);
+		this.headersMap = new Map([
+			['Content-Type', 'application/json']
+	]);
 		
 		
 	}

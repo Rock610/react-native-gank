@@ -16,25 +16,32 @@ import {
 import { StackNavigator } from 'react-navigation';
 import Splash from './MyModule/Splash';
 import Main from './MyModule/Main';
-import {styles} from './MyModule/MyScene';
+import History from './MyModule/HistoryComponent';
+// import {styles} from './MyModule/MyScene';
 
 export default class MyProj extends Component {
-  
+  static navigationOptions = {
+     title: 'GANK',
+  };
 
   render() {
+
     const { navigate } = this.props.navigation;
 
+    //必须把这里的navigation传给下一个页面
     return (
-      <Splash />
+      <Splash navigation = {this.props.navigation} />
     );
   }
   
 }
 
 const App = StackNavigator({
-  Home:{screen : MyProj},
-  MainComponent:{screen:Main}
-});
+    Home:{screen : MyProj},
+    MainComponent:{screen:Main},
+    HistoryComponent:{screen:History},
+    }
+  );
 
 class Blink extends Component{
   constructor(props){
@@ -83,29 +90,29 @@ class LotsOfGreeting extends Component{
   }
 }
 
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     backgroundColor: '#FFFFFF',
-//   },
-//   welcome: {
-//     fontSize: 20,
-//     textAlign: 'center',
-//     margin: 10,
-//   },
-//   instructions: {
-//     textAlign: 'center',
-//     color: '#333333',
-//     marginBottom: 5,
-//   },
-//   text:{
-//     textAlign: 'center',
-//     color: '#333333',
-//     marginBottom: 5,
-//     marginTop:100,
-//   }
-// });
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  welcome: {
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
+  },
+  instructions: {
+    textAlign: 'center',
+    color: '#333333',
+    marginBottom: 5,
+  },
+  text:{
+    textAlign: 'center',
+    color: '#333333',
+    marginBottom: 5,
+    marginTop:100,
+  }
+});
 
 AppRegistry.registerComponent('MyProj', () => App);

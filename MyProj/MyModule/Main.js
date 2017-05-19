@@ -1,60 +1,147 @@
 import React,{Component} from 'react'
-import {Image,ListView,View,StyleSheet} from 'react-native'
+import {Image,ListView,View,StyleSheet,RefreshControl,TouchableHighlight} from 'react-native'
 import NetworkManager from './network/NetworkManager'
+import GridView from 'react-native-gridview'
+
+const itemsPerRow = 2;
 
 export default class MainComponent extends Component{
+
+    static navigationOptions = {
+        title: 'GANK',
+    };
+
 	constructor(props){
 		super(props);
 		this.pageIndex = 1;
 		this.networkManager = new NetworkManager();
+
+		const ds = new GridView.DataSource({rowHasChanged:(r1,r2) => r1 !== r2});
 		this.state = {
-			dataArray:this.props.contentDataGroup,
-			dataSource : new ListView.DataSource({rowHasChanged:(r1,r2) => r1 !== r2})
-				.cloneWithRows(this.props.contentDataGroup)
+			isLoading:false,
+			isRefreshing:true,
+			dataArray:[],
+			dataSource : ds.cloneWithRows([[]])
 		}
+
+		// this.refresh();
 	}
 
 	loadMore(){
+		if(this.state.isLoading) return
+		this.setState({isLoading:true});
+		this.requestData();
 
-		this.pageIndex += 10;
-		this.networkManager.getBenifits(10,this.pageIndex,(json) => {
-			let loadedContentGroup = json.results;
-			let newContent = [...this.state.dataArray,loadedContentGroup]
-			this.setState({
-				dataArray:newContent,
-				dataSource:this.state.dataSource.cloneWithRows[newContent]
-
-			});
-		});
+		// console.log("============loadMore============");
 		
 	}
 
 	refresh(){
+		// if(this.state.isRefreshing) return
+		// this.setState({isRefreshing:true});
 		this.pageIndex = 1;
+		this.requestData();
+	}
+
+	requestData(){
 		this.networkManager.getBenifits(10,this.pageIndex,(json) => {
 			let loadedContentGroup = json.results;
-			let newContent = [...this.state.dataArray,loadedContentGroup]
+			
+			
+			let newContent;
+			if(this.state.dataArray && this.pageIndex != 1){
+				newContent = [...this.state.dataArray,...loadedContentGroup]
+			}else{
+				newContent = loadedContentGroup;
+			}
+
+            let newArr = [];
+
+			let mod = newContent.length % itemsPerRow;
+
+
+            for(let i = 0;i<newContent.length-mod;i+= itemsPerRow){
+                let arr = [newContent[i]];
+                for(let j = 1;j<itemsPerRow;j++){
+                    arr.push(newContent[i+j]);
+                }
+                newArr.push(arr);
+
+            }
+
+            if(mod > 0){
+                let modArr = [];
+                for(let i = newContent.length - mod;i<newContent.length;i++){
+                    modArr.push(newContent[i]);
+                }
+                newArr.push(modArr);
+            }
+
+			// console.log("newArr====>"+JSON.stringify(newArr));
+
+			this.pageIndex += 1;
+			
 			this.setState({
 				dataArray:newContent,
-				dataSource:this.state.dataSource.cloneWithRows[newContent]
+				dataSource:this.state.dataSource.cloneWithRows(newArr),
+				isLoading:false,
+				isRefreshing:false
 
 			});
+
 		});
 	}
+
+	renderRow(dataItem){
+
+		return(
+		    <TouchableHighlight onPress={()=>{
+                this.pressRow(dataItem);
+            }}>
+                <View style={styles.container} >
+                    <Image
+                        style={styles.image}
+                        source={{uri:this.getImageUrl(dataItem.url)}}
+                        resizeMode='cover'>
+                    </Image>
+                </View>
+            </TouchableHighlight>
+		);
+	}
+
+	pressRow(dataItem){
+        let {navigate} = this.props.navigation;
+        navigate("HistoryComponent")
+    }
+
+	getImageUrl(rawUrl){
+	    return rawUrl+"?imageView2/0/w/300";
+    }
 
 	render(){
 		return(
 			<View style={styles.container}>
-				<ListView
+				<GridView
+					itemsPerRow={itemsPerRow}
+				 	enableEmptySections={true}
 					dataSource={this.state.dataSource}
-					renderRow={(dataItem)=> 
-						<View style={styles.container}>
-							<Image style={styles.image} source={{uri:dataItem.url}}>
+                    // data={this.state.dataSource}
+					renderItem={(dataItem)=>this.renderRow(dataItem)}
+					onEndReached = {this.loadMore.bind(this)}
+					onEndReachedThreshold = {100}
+					refreshControl={
+			           <RefreshControl
+			            refreshing={this.state.isRefreshing}
+			            onRefresh={this.refresh.bind(this)}
+			            tintColor="#6495ED"
+			            progressBackgroundColor="#6495ED"
+			           />
+		            }
+					>
+					
+				</GridView>
 
-							</Image>
-						</View>
-					}>
-				</ListView>
+				
 			</View>
 		);
 	}
