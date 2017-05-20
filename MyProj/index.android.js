@@ -4,50 +4,43 @@
  * @flow
  */
 
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
-  AppRegistry,
-  StyleSheet,
-  Text,
-  View
+    AppRegistry,
 } from 'react-native';
+import {StackNavigator} from 'react-navigation';
+import Splash from './MyModule/Splash';
+import Main from './MyModule/Main';
+import History from './MyModule/HistoryComponent';
+import BaseWebView from './MyModule/base/BaseWebView';
+import AndroidComponent from './MyModule/TestAndroid';
+// import {styles} from './MyModule/MyScene';
 
 export default class MyProj extends Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.android.js
-        </Text>
-        <Text style={styles.instructions}>
-          Double tap R on your keyboard to reload,{'\n'}
-          Shake or press menu button for dev menu
-        </Text>
-      </View>
-    );
-  }
+    static navigationOptions = {
+        title: 'GANK',
+    };
+
+    render() {
+
+        const {navigate} = this.props.navigation;
+
+        //必须把这里的navigation传给下一个页面
+        return (
+            <Splash navigation={this.props.navigation}/>
+        );
+    }
+
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-});
+const App = StackNavigator({
+        Home: {screen: MyProj},
+        MainComponent: {screen: Main},
+        HistoryComponent: {screen: History},
+        BaseWebViewComponent:{screen:BaseWebView},
+        AndroidMain:{screen:AndroidComponent}
+    }
+);
 
-AppRegistry.registerComponent('MyProj', () => MyProj);
+
+AppRegistry.registerComponent('MyProj', () => App);

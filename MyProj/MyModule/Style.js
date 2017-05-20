@@ -1,21 +1,6 @@
-import React,{Component,PropTypes} from 'react';
-import {View,Text,StyleSheet,TouchableHighlight} from 'react-native';
+import React from 'react';
+import {StyleSheet} from 'react-native';
 
-
-export default class MyScene extends Component{
-	static defaultProps = {
-		title:'MyScene',
-	};
-
-	render(){
-		return(
-			<View>
-				<Text style={styles.text}> Im in {this.props.title} </Text>
-			</View>
-
-		);
-	}
-}
 
 export const styles = StyleSheet.create({
   container: {

@@ -1,72 +1,165 @@
-import React,{Component} from 'react'
-import {Image,ListView,View,StyleSheet} from 'react-native'
+import React, {Component} from 'react'
+import {Image, View, StyleSheet, RefreshControl, TouchableHighlight,ListView} from 'react-native'
 import NetworkManager from './network/NetworkManager'
+import GridView from 'react-native-gridview'
 
-export default class MainComponent extends Component{
-	constructor(props){
-		super(props);
-		this.pageIndex = 1;
-		this.networkManager = new NetworkManager();
-		this.state = {
-			dataArray:this.props.contentDataGroup,
-			dataSource : new ListView.DataSource({rowHasChanged:(r1,r2) => r1 !== r2})
-				.cloneWithRows(this.props.contentDataGroup)
-		}
-	}
+const itemsPerRow = 2;
+const PAGE_SIZE =12;
 
-	loadMore(){
+export default class MainComponent extends Component {
 
-		this.pageIndex += 10;
-		this.networkManager.getBenifits(10,this.pageIndex,(json) => {
-			let loadedContentGroup = json.results;
-			let newContent = [...this.state.dataArray,loadedContentGroup]
-			this.setState({
-				dataArray:newContent,
-				dataSource:this.state.dataSource.cloneWithRows[newContent]
+    static navigationOptions = {
+        title: 'GANK',
+    };
 
-			});
-		});
-		
-	}
+    constructor(props) {
+        super(props);
+        this.pageIndex = 1;
+        this.networkManager = new NetworkManager();
 
-	refresh(){
-		this.pageIndex = 1;
-		this.networkManager.getBenifits(10,this.pageIndex,(json) => {
-			let loadedContentGroup = json.results;
-			let newContent = [...this.state.dataArray,loadedContentGroup]
-			this.setState({
-				dataArray:newContent,
-				dataSource:this.state.dataSource.cloneWithRows[newContent]
+        const ds = new GridView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+        this.state = {
+            isLoading: false,
+            isRefreshing: false,
+            dataArray: [],
+            dataSource: ds.cloneWithRows([[]])
+        }
 
-			});
-		});
-	}
 
-	render(){
-		return(
-			<View style={styles.container}>
-				<ListView
-					dataSource={this.state.dataSource}
-					renderRow={(dataItem)=> 
-						<View style={styles.container}>
-							<Image style={styles.image} source={{uri:dataItem.url}}>
+    }
 
-							</Image>
-						</View>
-					}>
-				</ListView>
-			</View>
-		);
-	}
+    componentDidMount(){
+        this.refresh();
+    }
+
+    loadMore() {
+
+        if (this.state.isLoading) return
+        this.setState({isLoading: true});
+        this.requestData();
+
+        // console.log("============loadMore============");
+
+    }
+
+    refresh() {
+        // if(this.state.isRefreshing) return
+        this.setState({isRefreshing:true});
+        this.pageIndex = 1;
+        this.requestData();
+    }
+
+    requestData() {
+        this.networkManager.getBenifits(PAGE_SIZE, this.pageIndex, (json) => {
+            let loadedContentGroup = json.results;
+
+
+            let newContent;
+            if (this.state.dataArray && this.pageIndex != 1) {
+                newContent = [...this.state.dataArray, ...loadedContentGroup]
+            } else {
+                newContent = loadedContentGroup;
+            }
+
+            let newArr = [];
+
+            let mod = newContent.length % itemsPerRow;
+
+
+            for (let i = 0; i < newContent.length - mod; i += itemsPerRow) {
+                let arr = [newContent[i]];
+                for (let j = 1; j < itemsPerRow; j++) {
+                    arr.push(newContent[i + j]);
+                }
+                newArr.push(arr);
+
+            }
+
+            if (mod > 0) {
+                let modArr = [];
+                for (let i = newContent.length - mod; i < newContent.length; i++) {
+                    modArr.push(newContent[i]);
+                }
+                newArr.push(modArr);
+            }
+
+            // console.log("newArr====>"+JSON.stringify(newArr));
+
+            this.pageIndex += 1;
+
+            this.setState({
+                dataArray: newContent,
+                dataSource: this.state.dataSource.cloneWithRows(newArr),
+                isLoading: false,
+                isRefreshing: false
+
+            });
+
+        });
+    }
+
+    renderRow(dataItem) {
+
+        return (
+            <TouchableHighlight onPress={() => {
+                this.pressRow(dataItem);
+            }}>
+                <View style={styles.container}>
+                    <Image
+                        style={styles.image}
+                        source={{uri: this.getImageUrl(dataItem.url)}}
+                        resizeMode='cover'>
+                    </Image>
+                </View>
+            </TouchableHighlight>
+        );
+    }
+
+    pressRow(dataItem) {
+        let {navigate} = this.props.navigation;
+        navigate("HistoryComponent", {data: dataItem})
+    }
+
+    getImageUrl(rawUrl) {
+        return rawUrl + "?imageView2/0/w/300";
+    }
+
+    render() {
+        return (
+            <View style={styles.container}>
+                <GridView
+                    itemsPerRow={itemsPerRow}
+                    enableEmptySections={true}
+                    dataSource={this.state.dataSource}
+                    // data={this.state.dataSource}
+                    renderItem={(dataItem) => this.renderRow(dataItem)}
+                    onEndReached={this.loadMore.bind(this)}
+                    onEndReachedThreshold={200}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={this.state.isRefreshing}
+                            onRefresh={this.refresh.bind(this)}
+                            tintColor="#6495ED"
+                            progressBackgroundColor="#6495ED"
+                        />
+                    }
+                >
+
+                </GridView>
+
+
+            </View>
+        );
+    }
 }
 
 const styles = StyleSheet.create({
-	container:{
-		flex:1,
-		flexDirection: 'column',
-	},
-	image:{
-		alignItems:'center',
-		height:200
-	}
+    container: {
+        flex: 1,
+        flexDirection: 'column',
+    },
+    image: {
+        alignItems: 'center',
+        height: 200
+    }
 });
