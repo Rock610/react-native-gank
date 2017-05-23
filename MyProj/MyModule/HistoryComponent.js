@@ -107,6 +107,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
     },
     titleImage: {
+        resizeMode:'cover',
         height: 250
     },
     textContent: {
