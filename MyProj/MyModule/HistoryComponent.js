@@ -2,7 +2,7 @@
  * Created by rock on 2017/5/19.
  */
 import React, {Component} from 'react'
-import {View, Text, Image, StyleSheet, ListView, TouchableHighlight} from 'react-native'
+import {View, Text, Image, StyleSheet, ListView, TouchableWithoutFeedback} from 'react-native'
 import NetworkManager from './network/NetworkManager'
 
 export default class HistoryContent extends Component {
@@ -68,14 +68,14 @@ export default class HistoryContent extends Component {
         }
 
         return (
-            <TouchableHighlight onPress={()=>{
+            <TouchableWithoutFeedback onPress={()=>{
                 this.pressItem(dataItem);
             }}>
                 <View stye={styles.container}>
                     <Text style={style}>{title}</Text>
                     <Text style={styles.textContent}>{dataItem.desc}</Text>
                 </View>
-            </TouchableHighlight>
+            </TouchableWithoutFeedback>
         );
     }
 
@@ -105,6 +105,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#FFFFFF',
+        paddingBottom:10
     },
     titleImage: {
         resizeMode:'cover',
@@ -126,6 +127,6 @@ const styles = StyleSheet.create({
         alignContent: 'center',
         paddingLeft: 6,
         paddingTop:10
-    }
+    },
 
 });

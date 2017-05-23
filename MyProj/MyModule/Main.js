@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Image, View, StyleSheet, RefreshControl, TouchableHighlight,ListView} from 'react-native'
+import {Image, View, StyleSheet, RefreshControl, TouchableWithoutFeedback,Text} from 'react-native'
 import NetworkManager from './network/NetworkManager'
 import GridView from 'react-native-gridview'
 
@@ -100,18 +100,23 @@ export default class MainComponent extends Component {
 
     renderRow(dataItem) {
 
+        let date = new Date(dataItem.publishedAt);
+
         return (
-            <TouchableHighlight onPress={() => {
+            <TouchableWithoutFeedback onPress={() => {
                 this.pressRow(dataItem);
             }}>
                 <View style={styles.container}>
+
+                    {/*<Text style={styles.dateText}>{date}</Text>*/}
                     <Image
                         style={styles.image}
                         source={{uri: this.getImageUrl(dataItem.url)}}
                         resizeMode='cover'>
                     </Image>
+
                 </View>
-            </TouchableHighlight>
+            </TouchableWithoutFeedback>
         );
     }
 
@@ -156,10 +161,14 @@ export default class MainComponent extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        flexDirection: 'column',
+        justifyContent:'center',
+        alignItems: 'center',
+        // flexDirection: 'column',
     },
     image: {
         alignItems: 'center',
         height: 200
+    },
+    dateText:{
     }
 });
