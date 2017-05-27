@@ -4,6 +4,7 @@
 import React, {Component} from 'react'
 import {View, Text, Image, StyleSheet, ListView, TouchableWithoutFeedback} from 'react-native'
 import NetworkManager from './network/NetworkManager'
+import MyListView from './MyListView'
 
 export default class HistoryContent extends Component {
 
@@ -89,6 +90,12 @@ export default class HistoryContent extends Component {
 
                 <Image style={styles.titleImage} source={{uri: this.transitionData.url}}/>
                 <ListView
+                    onStartShouldSetResponder={(e)=> true}
+
+                    onResponderMove={(e)=>{
+                        console.log("event=============>"+e.nativeEvent.locationY);
+
+                    }}
                     dataSource={this.state.dataList}
                     renderRow={(dataItem, sectionID, rowID, highlightRow) => this.renderItem(dataItem, sectionID, rowID, highlightRow)}
                     enableEmptySections={true}

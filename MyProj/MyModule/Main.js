@@ -1,10 +1,10 @@
 import React, {Component} from 'react'
-import {Image, View, StyleSheet, RefreshControl, TouchableWithoutFeedback,Text} from 'react-native'
+import {Image, View, StyleSheet, RefreshControl, TouchableWithoutFeedback, Text} from 'react-native'
 import NetworkManager from './network/NetworkManager'
 import GridView from 'react-native-gridview'
 
 const itemsPerRow = 2;
-const PAGE_SIZE =12;
+const PAGE_SIZE = 12;
 
 export default class MainComponent extends Component {
 
@@ -28,7 +28,7 @@ export default class MainComponent extends Component {
 
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.refresh();
     }
 
@@ -44,7 +44,7 @@ export default class MainComponent extends Component {
 
     refresh() {
         // if(this.state.isRefreshing) return
-        this.setState({isRefreshing:true});
+        this.setState({isRefreshing: true});
         this.pageIndex = 1;
         this.requestData();
     }
@@ -101,6 +101,7 @@ export default class MainComponent extends Component {
     renderRow(dataItem) {
 
         let date = new Date(dataItem.publishedAt);
+        let strDate = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
 
         return (
             <TouchableWithoutFeedback onPress={() => {
@@ -108,12 +109,16 @@ export default class MainComponent extends Component {
             }}>
                 <View style={styles.container}>
 
-                    {/*<Text style={styles.dateText}>{date}</Text>*/}
+
                     <Image
                         style={styles.image}
                         source={{uri: this.getImageUrl(dataItem.url)}}
                         resizeMode='cover'>
                     </Image>
+
+                    <View style={styles.textContainer}>
+                        <Text style={styles.dateText}>{strDate}</Text>
+                    </View>
 
                 </View>
             </TouchableWithoutFeedback>
@@ -161,14 +166,25 @@ export default class MainComponent extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent:'center',
-        alignItems: 'center',
-        // flexDirection: 'column',
+        flexDirection: 'column',
     },
     image: {
         alignItems: 'center',
-        height: 200
+        height: 200,
     },
-    dateText:{
+    textContainer: {
+        flex: 1,
+        position: 'absolute',
+        left: 0,
+        bottom: 0,
+        right: 0,
+        height: 30,
+        justifyContent: 'center',
+        backgroundColor: '#0000004C',
+    },
+    dateText: {
+        color: '#FFFFFF',
+        paddingLeft: 6,
+
     }
 });
