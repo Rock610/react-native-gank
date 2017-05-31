@@ -2,9 +2,8 @@
  * Created by rock on 2017/5/19.
  */
 import React, {Component} from 'react'
-import {View, Text, Image, StyleSheet, ListView, TouchableWithoutFeedback} from 'react-native'
+import {View, Text, Image, StyleSheet, ListView, TouchableWithoutFeedback,PanResponder} from 'react-native'
 import NetworkManager from './network/NetworkManager'
-import MyListView from './MyListView'
 
 export default class HistoryContent extends Component {
 
@@ -19,7 +18,9 @@ export default class HistoryContent extends Component {
 
         this.state = {
             dataArray: [],
-            dataList: ds.cloneWithRows([])
+            dataList: ds.cloneWithRows([]),
+            imageViewHeight:250,
+            downHeight:250
         }
         new NetworkManager().getHistory(realDate, (json) => {
 
@@ -42,18 +43,79 @@ export default class HistoryContent extends Component {
 
     }
 
-    nnArr(arr){
-        if(arr) return arr;
+    componentWillMount() {
+        this._panResponder = PanResponder.create({  // Ask to be the responder:
+            onStartShouldSetPanResponder: (evt, gestureState) => true,
+            onMoveShouldSetPanResponder: (evt, gestureState) => true,
+            onPanResponderGrant: (evt, gestureState) => {
+                // The guesture has started. Show visual feedback so the user knows
+                // what is happening!
+                // gestureState.d{x,y} will be set to zero now
+
+                //先取到上一次被改变的高度
+                this.setState({
+                    downHeight:this.state.imageViewHeight
+                });
+
+            },
+
+            //不能与onResponderMove同时实现
+
+            onPanResponderMove: (evt, gestureState) => {  // The most recent move distance is gestureState.move{X,Y}
+                // The accumulated gesture distance since becoming responder is
+                // gestureState.d{x,y}
+                let dy = gestureState.dy;
+                //读取固定高度,在此高度的基础上做加减
+                let lastHeight = this.state.downHeight;
+
+                let max = 250;
+                let min = 50;
+                let height = lastHeight+dy;
+
+                height = height < min? min:height;
+                height = height > max? max:height;
+
+                this.refs.imageView.setNativeProps({
+                            style:{
+                                height:height
+                            }
+                        });
+
+                //保存当前高度
+                this.setState({
+                    imageViewHeight:height
+                });
+
+                // console.log("========gestureState.dY=========="+dy);
+            },
+
+            onPanResponderTerminationRequest: (evt, gestureState) => true,
+            onPanResponderRelease: (evt, gestureState) => {  // The user has released all touches while this view is the
+                // responder. This typically means a gesture has succeeded
+                //
+                console.log("=========onPanResponderTerminationRequest==========")
+            },
+
+            onPanResponderTerminate: (evt, gestureState) => {  // Another component has become the responder, so this gesture
+                // should be cancelled
+                console.log("==========onPanResponderTerminate==========")
+            },
+
+        });
+    }
+
+    nnArr(arr) {
+        if (arr) return arr;
         else return [];
     }
 
-    pressItem(dataItem){
+    pressItem(dataItem) {
         let {navigate} = this.props.navigation;
-        navigate('BaseWebViewComponent',{uri:dataItem.url});
+        navigate('BaseWebViewComponent', {uri: dataItem.url});
     }
 
     renderItem(dataItem, sectionID, rowID, highlightRow) {
-        console.log("dataItem=====>"+JSON.stringify(dataItem));
+        // console.log("dataItem=====>" + JSON.stringify(dataItem));
         let title = "";
         let style = styles.textTitle;
         let last = this.state.dataArray[rowID - 1];
@@ -62,14 +124,14 @@ export default class HistoryContent extends Component {
             if (dataItem.type !== last.type) {
                 title = dataItem.type;
             } else {
-                style = {display:'none'}
+                style = {display: 'none'}
             }
         } else {
             title = dataItem.type;
         }
 
         return (
-            <TouchableWithoutFeedback onPress={()=>{
+            <TouchableWithoutFeedback onPress={() => {
                 this.pressItem(dataItem);
             }}>
                 <View stye={styles.container}>
@@ -88,14 +150,12 @@ export default class HistoryContent extends Component {
         return (
             <View style={styles.container}>
 
-                <Image style={styles.titleImage} source={{uri: this.transitionData.url}}/>
+                <Image ref='imageView'
+                       // onlayout={(event)=> this.measureView(event)}
+                       style={{height:250}} source={{uri: this.transitionData.url}}/>
                 <ListView
-                    onStartShouldSetResponder={(e)=> true}
+                    {...this._panResponder.panHandlers}
 
-                    onResponderMove={(e)=>{
-                        console.log("event=============>"+e.nativeEvent.locationY);
-
-                    }}
                     dataSource={this.state.dataList}
                     renderRow={(dataItem, sectionID, rowID, highlightRow) => this.renderItem(dataItem, sectionID, rowID, highlightRow)}
                     enableEmptySections={true}
@@ -112,10 +172,10 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#FFFFFF',
-        paddingBottom:10
+        paddingBottom: 10
     },
     titleImage: {
-        resizeMode:'cover',
+        resizeMode: 'cover',
         height: 250
     },
     textContent: {
@@ -123,9 +183,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
         color: '#333333',
         alignContent: 'center',
-        paddingTop:16,
-        paddingLeft:12,
-        paddingRight:12
+        paddingTop: 16,
+        paddingLeft: 12,
+        paddingRight: 12
 
     },
     textTitle: {
@@ -133,7 +193,7 @@ const styles = StyleSheet.create({
         color: '#777777',
         alignContent: 'center',
         paddingLeft: 6,
-        paddingTop:10
+        paddingTop: 10
     },
 
 });
