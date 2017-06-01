@@ -34,7 +34,7 @@ export default class MainComponent extends Component {
 
     loadMore() {
 
-        if (this.state.isLoading) return
+        if (!this.state.dataArray || this.state.isLoading || this.state.isRefreshing) return
         this.setState({isLoading: true});
         this.requestData();
 

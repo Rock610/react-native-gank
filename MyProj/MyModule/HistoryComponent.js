@@ -69,7 +69,7 @@ export default class HistoryContent extends Component {
                 let lastHeight = this.state.downHeight;
 
                 let max = 250;
-                let min = 50;
+                let min = 0;
                 let height = lastHeight+dy;
 
                 height = height < min? min:height;
