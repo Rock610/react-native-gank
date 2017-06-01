@@ -7,22 +7,26 @@ export default class NetworkManager {
         this.headersMap = new Map([
             ['Content-Type', 'application/json']
         ]);
-
-
     }
 
-    get(url, callBack, header = this.headersMap) {
+    get(url, callBack, header=new Map()) {
 
         let realUrl = this.baseUrl + url;
 
         // console.log("realUrl=======>" + realUrl);
-        let headerConstruct;
+        let headerConstruct = {};
 
-        for (let key of header.keys()) {
-            headerConstruct = {
-                key: header.get(key)
+        for(let key of this.headersMap.keys()){
+            headerConstruct[key] = this.headersMap.get(key);
+        }
+
+        if(header.keys()){
+            for (let key of header.keys()) {
+                headerConstruct[key] = header.get(key);
             }
         }
+
+        console.log("headerConstruct=====>"+JSON.stringify(headerConstruct));
 
         fetch(realUrl, {
             method: 'GET',
@@ -36,7 +40,7 @@ export default class NetworkManager {
 
             })
             .catch((error) => {
-                console.error(error);
+                console.log(error);
             })
 
 
