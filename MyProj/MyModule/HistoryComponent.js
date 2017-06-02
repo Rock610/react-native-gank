@@ -4,6 +4,7 @@
 import React, {Component} from 'react'
 import {View, Text, Image, StyleSheet, ListView, TouchableWithoutFeedback, PanResponder} from 'react-native'
 import NetworkManager from './network/NetworkManager'
+import Toast from 'react-native-root-toast'
 
 export default class HistoryContent extends Component {
 
@@ -20,7 +21,8 @@ export default class HistoryContent extends Component {
             dataArray: [],
             dataList: ds.cloneWithRows([]),
             imageViewHeight: 250,
-            downHeight: 250
+            downHeight: 250,
+            lastMoveY:0
         }
         new NetworkManager().getHistory(realDate, (json) => {
 
@@ -33,7 +35,7 @@ export default class HistoryContent extends Component {
 
             // let list = [json.Android,...json.iOS,...json.前端,...json.休息视频];
 
-            console.log("list======>" + JSON.stringify(list));
+            // console.log("list======>" + JSON.stringify(list));
 
             this.setState({
                 dataArray: list,
@@ -45,13 +47,30 @@ export default class HistoryContent extends Component {
 
     componentWillMount() {
         this._panResponder = PanResponder.create({  // Ask to be the responder:
-            onStartShouldSetPanResponder: (evt, gestureState) => true,
-            onMoveShouldSetPanResponder: (evt, gestureState) => true,
+            // onStartShouldSetPanResponder: (evt, gestureState) => {
+            //     return true
+            // },
+            onMoveShouldSetPanResponder: (evt, gestureState) => {
+                if(this.state.lastMoveY === 0){
+                    this.setState({
+                        lastMoveY:gestureState.moveY
+                    });
+                    return false;
+                }
+                let deltaY = Math.abs(gestureState.moveY-this.state.lastMoveY);
+                this.setState({
+                    lastMoveY:gestureState.moveY
+                });
+                console.log("onMoveShouldSetPanResponder=========>"+gestureState.moveY)
+                return deltaY >= 5;
+
+
+            },
             onPanResponderGrant: (evt, gestureState) => {
                 // The guesture has started. Show visual feedback so the user knows
                 // what is happening!
                 // gestureState.d{x,y} will be set to zero now
-
+                console.log("======onPanResponderGrant=========>"+gestureState.moveY);
                 //先取到上一次被改变的高度
                 this.setState({
                     downHeight: this.state.imageViewHeight
@@ -59,11 +78,17 @@ export default class HistoryContent extends Component {
 
             },
 
+            onStartShouldSetResponderCapture: (evt) => false,
+
             //不能与onResponderMove同时实现
 
             onPanResponderMove: (evt, gestureState) => {  // The most recent move distance is gestureState.move{X,Y}
                 // The accumulated gesture distance since becoming responder is
                 // gestureState.d{x,y}
+
+                // console.log('deltaY==========>'+deltaY);
+
+
                 let dy = gestureState.dy;
                 //读取固定高度,在此高度的基础上做加减
                 let lastHeight = this.state.downHeight;
@@ -110,6 +135,7 @@ export default class HistoryContent extends Component {
     }
 
     pressItem(dataItem) {
+        // Toast.show("pressItem11");
         let {navigate} = this.props.navigation;
         navigate('BaseWebViewComponent', {uri: dataItem.url});
     }
