@@ -26,7 +26,7 @@ export default class NetworkManager {
             }
         }
 
-        console.log("headerConstruct=====>"+JSON.stringify(headerConstruct));
+        // console.log("headerConstruct=====>"+JSON.stringify(headerConstruct));
 
         fetch(realUrl, {
             method: 'GET',

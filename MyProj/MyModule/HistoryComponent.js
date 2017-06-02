@@ -2,7 +2,7 @@
  * Created by rock on 2017/5/19.
  */
 import React, {Component} from 'react'
-import {View, Text, Image, StyleSheet, ListView, TouchableWithoutFeedback,PanResponder} from 'react-native'
+import {View, Text, Image, StyleSheet, ListView, TouchableWithoutFeedback, PanResponder} from 'react-native'
 import NetworkManager from './network/NetworkManager'
 
 export default class HistoryContent extends Component {
@@ -19,8 +19,8 @@ export default class HistoryContent extends Component {
         this.state = {
             dataArray: [],
             dataList: ds.cloneWithRows([]),
-            imageViewHeight:250,
-            downHeight:250
+            imageViewHeight: 250,
+            downHeight: 250
         }
         new NetworkManager().getHistory(realDate, (json) => {
 
@@ -54,7 +54,7 @@ export default class HistoryContent extends Component {
 
                 //先取到上一次被改变的高度
                 this.setState({
-                    downHeight:this.state.imageViewHeight
+                    downHeight: this.state.imageViewHeight
                 });
 
             },
@@ -70,20 +70,20 @@ export default class HistoryContent extends Component {
 
                 let max = 250;
                 let min = 0;
-                let height = lastHeight+dy;
+                let height = lastHeight + dy;
 
-                height = height < min? min:height;
-                height = height > max? max:height;
+                height = height < min ? min : height;
+                height = height > max ? max : height;
 
                 this.refs.imageView.setNativeProps({
-                            style:{
-                                height:height
-                            }
-                        });
+                    style: {
+                        height: height
+                    }
+                });
 
                 //保存当前高度
                 this.setState({
-                    imageViewHeight:height
+                    imageViewHeight: height
                 });
 
                 // console.log("========gestureState.dY=========="+dy);
@@ -131,14 +131,17 @@ export default class HistoryContent extends Component {
         }
 
         return (
-            <TouchableWithoutFeedback onPress={() => {
-                this.pressItem(dataItem);
-            }}>
-                <View stye={styles.container}>
+            <TouchableWithoutFeedback
+                onPress={() => {
+                    this.pressItem(dataItem);
+                }}>
+                <View style={styles.itemContainer}>
                     <Text style={style}>{title}</Text>
                     <Text style={styles.textContent}>{dataItem.desc}</Text>
                 </View>
             </TouchableWithoutFeedback>
+
+
         );
     }
 
@@ -151,13 +154,14 @@ export default class HistoryContent extends Component {
             <View style={styles.container}>
 
                 <Image ref='imageView'
-                       // onlayout={(event)=> this.measureView(event)}
-                       style={{height:250}} source={{uri: this.transitionData.url}}/>
+                    // onlayout={(event)=> this.measureView(event)}
+                       style={{height: 250}} source={{uri: this.transitionData.url}}/>
                 <ListView
                     {...this._panResponder.panHandlers}
 
                     dataSource={this.state.dataList}
-                    renderRow={(dataItem, sectionID, rowID, highlightRow) => this.renderItem(dataItem, sectionID, rowID, highlightRow)}
+                    renderRow={(dataItem, sectionID, rowID, highlightRow) =>
+                        this.renderItem(dataItem, sectionID, rowID, highlightRow)}
                     enableEmptySections={true}
                 >
 
@@ -174,18 +178,27 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
         paddingBottom: 10
     },
+    itemContainer: {
+        backgroundColor: '#FFFFFF',
+        flex: 1,
+        paddingBottom: 10,
+        // borderBottomColor: '#999',
+        // borderBottomWidth: StyleSheet.hairlineWidth,
+
+    },
     titleImage: {
         resizeMode: 'cover',
         height: 250
     },
     textContent: {
         flex: 1,
-        backgroundColor: '#FFFFFF',
+        // backgroundColor: '#ffffff',
         color: '#333333',
         alignContent: 'center',
         paddingTop: 16,
         paddingLeft: 12,
-        paddingRight: 12
+        paddingRight: 12,
+
 
     },
     textTitle: {

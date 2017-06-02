@@ -186,5 +186,6 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         paddingLeft: 6,
 
+
     }
 });
