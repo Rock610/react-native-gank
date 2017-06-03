@@ -22,7 +22,6 @@ export default class HistoryContent extends Component {
             dataList: ds.cloneWithRows([]),
             imageViewHeight: 250,
             downHeight: 250,
-            lastMoveY:0
         }
         new NetworkManager().getHistory(realDate, (json) => {
 
@@ -51,17 +50,9 @@ export default class HistoryContent extends Component {
             //     return true
             // },
             onMoveShouldSetPanResponder: (evt, gestureState) => {
-                if(this.state.lastMoveY === 0){
-                    this.setState({
-                        lastMoveY:gestureState.moveY
-                    });
-                    return false;
-                }
-                let deltaY = Math.abs(gestureState.moveY-this.state.lastMoveY);
-                this.setState({
-                    lastMoveY:gestureState.moveY
-                });
-                console.log("onMoveShouldSetPanResponder=========>"+gestureState.moveY)
+
+                let deltaY = Math.abs(gestureState.dy);
+
                 return deltaY >= 5;
 
 
@@ -118,7 +109,7 @@ export default class HistoryContent extends Component {
             onPanResponderRelease: (evt, gestureState) => {  // The user has released all touches while this view is the
                 // responder. This typically means a gesture has succeeded
                 //
-                console.log("=========onPanResponderTerminationRequest==========")
+                console.log("=========onPanResponderRelease==========")
             },
 
             onPanResponderTerminate: (evt, gestureState) => {  // Another component has become the responder, so this gesture
