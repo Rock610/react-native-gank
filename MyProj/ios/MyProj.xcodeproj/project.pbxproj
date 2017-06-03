@@ -228,6 +228,13 @@
 			remoteGlobalIDString = 58B5119B1A9E6C1200147676;
 			remoteInfo = RCTText;
 		};
+		DD03BE9C1EDEC3D3001CA0CD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 13B07F861A680F5B00A75B9A;
+			remoteInfo = MyProj;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -552,6 +559,7 @@
 			);
 			dependencies = (
 				2D02E4921E0B4A5D006451C7 /* PBXTargetDependency */,
+				DD03BE9D1EDEC3D3001CA0CD /* PBXTargetDependency */,
 			);
 			name = "MyProj-tvOSTests";
 			productName = "MyProj-tvOSTests";
@@ -585,7 +593,7 @@
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = W3AG3W4VSC;
 						ProvisioningStyle = Automatic;
-						TestTargetID = 2D02E47A1E0B4A5D006451C7;
+						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 				};
 			};
@@ -947,6 +955,11 @@
 			target = 2D02E47A1E0B4A5D006451C7 /* MyProj-tvOS */;
 			targetProxy = 2D02E4911E0B4A5D006451C7 /* PBXContainerItemProxy */;
 		};
+		DD03BE9D1EDEC3D3001CA0CD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 13B07F861A680F5B00A75B9A /* MyProj */;
+			targetProxy = DD03BE9C1EDEC3D3001CA0CD /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
@@ -1119,7 +1132,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.REACT.MyProj-tvOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MyProj-tvOS.app/MyProj-tvOS";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MyProj.app/MyProj";
 				TVOS_DEPLOYMENT_TARGET = 10.1;
 			};
 			name = Debug;
@@ -1141,7 +1154,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.REACT.MyProj-tvOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MyProj-tvOS.app/MyProj-tvOS";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MyProj.app/MyProj";
 				TVOS_DEPLOYMENT_TARGET = 10.1;
 			};
 			name = Release;
