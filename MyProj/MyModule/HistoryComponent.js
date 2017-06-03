@@ -51,6 +51,7 @@ export default class HistoryContent extends Component {
             // },
             onMoveShouldSetPanResponder: (evt, gestureState) => {
 
+                //dy帮助在确认处理move事件前确定已经移动的距离,超过阈值才处理，不然会与item的点击事件冲突
                 let deltaY = Math.abs(gestureState.dy);
 
                 return deltaY >= 5;
